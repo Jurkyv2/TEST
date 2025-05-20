@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fortnite Rewards Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .fade-in { animation: fadeIn 0.7s ease-in-out forwards; opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+    input::placeholder { color: #bbb; }
+    input { background-color: #1f1f1f; color: white; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-black text-white min-h-screen flex fade-in">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-black bg-opacity-40 backdrop-blur-md shadow-lg h-screen p-6 hidden md:block">
+    <h1 class="text-3xl font-extrabold text-pink-500 mb-10">🎁 Fortnite Rewards</h1>
+    <nav class="space-y-6">
+      <button onclick="switchTab('home')" class="block w-full text-left text-xl text-white hover:text-pink-500 transition">🏠 Home</button>
+      <button onclick="switchTab('schedule')" class="block w-full text-left text-xl text-white hover:text-pink-500 transition">📅 Schedule</button>
+      <button onclick="switchTab('map')" class="block w-full text-left text-xl text-white hover:text-pink-500 transition">🗺️ Map</button>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-8 relative overflow-hidden">
+    
+    <!-- LOGIN WITH DISCORD -->
+    <div class="absolute top-4 right-4 z-50 space-x-2">
+      <a href="https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=token&scope=identify"
+         class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">
+        🔓 Login z Discordom
+      </a>
+      <button onclick="showLogin()" class="bg-pink-600 text-white px-5 py-2 rounded-lg shadow hover:bg-pink-700 transition hidden" id="show-login">
+        🔐 Admin Login
+      </button>
+    </div>
+
+    <!-- USER INFO -->
+    <div id="user-info" class="absolute top-4 right-4 z-40 hidden bg-gray-900 px-4 py-2 rounded-xl shadow text-sm text-white">
+      <span id="user-name"></span>
+      <span id="user-vbucks" class="ml-2 text-pink-400"></span>
+    </div>
+
+    <!-- HOME PAGE -->
+    <section id="tab-home" data-aos="fade-up" data-aos-duration="1000">
+      <h2 class="text-5xl font-extrabold text-pink-400 mb-6 drop-shadow-md">👑 Welcome to Fortnite Rewards</h2>
+      <p class="text-xl mb-6 text-gray-300">Join the action and unlock exclusive Fortnite cosmetics by participating in our events!</p>
+      <ul class="list-disc list-inside text-lg space-y-3 text-pink-200 ml-4">
+        <li>🎮 Weekly live streams with awesome challenges</li>
+        <li>📅 Stay updated with our live stream calendar</li>
+        <li>🗺️ Explore our custom-built creative maps</li>
+        <li>🎁 Win V-Bucks, skins, emotes, and more</li>
+      </ul>
+      <div class="mt-8">
+        <a href="https://discord.gg/YOURSERVER" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 px-8 py-3 rounded-full text-white font-bold shadow-lg transition-all duration-300 transform hover:scale-105">💬 Join Our Discord</a>
+      </div>
+    </section>
+
+    <!-- SCHEDULE PAGE -->
+    <section id="tab-schedule" class="hidden" data-aos="fade-up">
+      <h2 class="text-4xl font-bold text-center text-pink-400 mb-6">📺 Weekly Stream Schedule</h2>
+      <div id="admin-controls" class="hidden text-center mb-6 space-x-4">
+        <button onclick="openModal()" class="bg-pink-600 text-white px-6 py-2 rounded-xl shadow-md hover:bg-pink-700 transition transform hover:scale-105">
+          ➕ Add Stream
+        </button>
+      </div>
+      <div class="grid grid-cols-7 gap-4 text-center text-sm font-semibold text-pink-300 mb-3">
+        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+      </div>
+      <div id="schedule" class="grid grid-cols-7 gap-4 text-sm"></div>
+    </section>
+
+    <!-- MAP PAGE -->
+    <section id="tab-map" class="hidden" data-aos="fade-up">
+      <h2 class="text-4xl font-bold text-pink-400 mb-4">🗺️ Featured Fortnite Map</h2>
+      <p class="mb-3 text-lg">Map Code: <strong class="text-blue-400">1234-5678-ABCD</strong></p>
+      <img src="https://example.com/map-image.jpg" alt="Fortnite Map" class="rounded-xl shadow-xl border border-pink-500 w-full max-w-2xl mx-auto" />
+    </section>
+  </main>
+
+  <!-- ADD STREAM MODAL -->
+  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-gray-900 p-6 rounded-lg w-full max-w-md shadow-xl">
+      <h3 class="text-xl font-bold mb-4">Add Stream</h3>
+      <input id="day" type="text" placeholder="Day (e.g. Mon)" class="w-full p-2 mb-2 rounded border border-pink-500" />
+      <input id="title" type="text" placeholder="Title" class="w-full p-2 mb-2 rounded border border-pink-500" />
+      <input id="link" type="text" placeholder="Link (optional)" class="w-full p-2 mb-4 rounded border border-pink-500" />
+      <div class="text-right space-x-2">
+        <button onclick="closeModal()" class="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600">Cancel</button>
+        <button onclick="addStream()" class="px-4 py-2 rounded bg-pink-600 hover:bg-pink-700">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-gray-800 p-6 rounded-lg w-full max-w-sm">
+      <h3 class="text-xl font-bold mb-4">Admin Login</h3>
+      <input id="password" type="password" placeholder="Enter admin password" class="w-full p-2 rounded mb-4" />
+      <div class="text-right">
+        <button onclick="login()" class="bg-pink-600 px-4 py-2 rounded hover:bg-pink-700">Log In</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AOS SCRIPT -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ once: true, duration: 800, offset: 50 });
+
+    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const scheduleData = JSON.parse(localStorage.getItem('schedule') || '{}');
+    const userData = JSON.parse(localStorage.getItem('users') || '{}');
+    const showLoginBtn = document.getElementById('show-login');
+    const userInfo = document.getElementById('user-info');
+    const userName = document.getElementById('user-name');
+    const userVbucks = document.getElementById('user-vbucks');
+    const scheduleEl = document.getElementById('schedule');
+    const adminControls = document.getElementById('admin-controls');
+
+    function renderUser() {
+      const user = JSON.parse(localStorage.getItem('currentUser'));
+      if (user) {
+        userInfo.classList.remove('hidden');
+        userName.textContent = user.username;
+        userVbucks.textContent = `💰 ${user.vbucks} V-Bucks`;
+      }
+    }
+
+    if (window.location.hash.includes('access_token')) {
+      const fakeUser = { username: 'Gost (Discord)', vbucks: 100 };
+      localStorage.setItem('currentUser', JSON.stringify(fakeUser));
+      renderUser();
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+    }
+
+    function showLogin() {
+      document.getElementById('login-modal').classList.remove('hidden');
+    }
+
+    function login() {
+      const pass = document.getElementById('password').value;
+      if (pass === 'admin123') {
+        sessionStorage.setItem('admin', 'true');
+        document.getElementById('login-modal').classList.add('hidden');
+        adminControls.classList.remove('hidden');
+      }
+    }
+
+    function openModal() {
+      if (sessionStorage.getItem('admin') === 'true') {
+        document.getElementById('modal').classList.remove('hidden');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    function addStream() {
+      const day = document.getElementById('day').value.trim();
+      const title = document.getElementById('title').value.trim();
+      const link = document.getElementById('link').value.trim();
+      if (!day || !title) return alert('Please enter both day and title');
+      if (!scheduleData[day]) scheduleData[day] = [];
+      scheduleData[day].push({ title, link });
+      localStorage.setItem('schedule', JSON.stringify(scheduleData));
+      renderSchedule();
+      closeModal();
+    }
+
+    function renderSchedule() {
+      scheduleEl.innerHTML = '';
+      days.forEach(day => {
+        const dayCol = document.createElement('div');
+        dayCol.classList.add('space-y-2');
+        (scheduleData[day] || []).forEach(event => {
+          const div = document.createElement('div');
+          div.className = 'p-3 rounded-xl shadow-md bg-gradient-to-r from-pink-700 to-purple-700 hover:from-pink-600 hover:to-purple-600 transform hover:scale-105 transition duration-300';
+          div.innerHTML = event.link 
+            ? `<a href="${event.link}" target="_blank">🎮 ${event.title}</a>` 
+            : `🎮 ${event.title}`;
+          dayCol.appendChild(div);
+        });
+        scheduleEl.appendChild(dayCol);
+      });
+    }
+
+    if (window.location.search.includes('admin')) showLoginBtn.classList.remove('hidden');
+    if (sessionStorage.getItem('admin') === 'true') adminControls.classList.remove('hidden');
+
+    renderUser();
+    renderSchedule();
+  </script>
+</body>
+</html>
